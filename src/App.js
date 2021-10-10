@@ -1,78 +1,60 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import SearchBar from './components/Searchbar/Searchbar';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import ButtonLoadMore from './components/Button/Button';
 import Modal from './components/Modal/Modal';
 
-class App extends Component {
-  state = {
-    arrayImg: [],
-    modalImg: '',
-    showModal: false,
-  };
+function App() {
+  const [arrayImg, setArrayImg] = useState([]);
+  const [modalImg, setModalImg] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
 
-  componentDidUpdate(prevProps, prevState) {
-    const { length } = prevState.arrayImg;
-    const { arrayImg } = this.state;
-
-    if (length !== arrayImg.length) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }
-
-  onSubmit = ({ arrayImg, searchInput }) => {
-    this.setState({
-      arrayImg: arrayImg,
-      searchInput: searchInput,
+  useEffect(() => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
     });
+  }, [arrayImg]);
+
+  const onSubmit = ({ arrayImg, searchInput }) => {
+    setArrayImg(arrayImg);
+    setSearchInput(searchInput);
   };
 
-  loadMore = moreImg => {
-    const { arrayImg } = this.state;
-    this.setState({
-      arrayImg: [...arrayImg, ...moreImg],
-    });
+  const loadMore = moreImg => {
+    setArrayImg([...arrayImg, ...moreImg]);
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  const toggleModal = closeModalEsc => {
+    setShowModal(!showModal);
+    window.removeEventListener('keydown', closeModalEsc);
   };
 
-  openModal = e => {
+  const openModal = e => {
     const { dataset, nodeName } = e.target;
 
     if (nodeName === 'IMG') {
-      this.setState(({ showModal }) => ({
-        modalImg: dataset.large,
-        showModal: !showModal,
-      }));
+      setModalImg(dataset.large);
+      setShowModal(!showModal);
     }
   };
 
-  render() {
-    const { arrayImg, searchInput, showModal, modalImg } = this.state;
-
-    return (
-      <>
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src={modalImg} alt="" />
-          </Modal>
-        )}
-        <SearchBar onSubmit={this.onSubmit} />
-        <ImageGallery arrayImg={arrayImg} openModal={this.openModal} />
-        {arrayImg.length !== 0 && (
-          <ButtonLoadMore searchInput={searchInput} loadMore={this.loadMore} />
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <img src={modalImg} alt="" />
+        </Modal>
+      )}
+      <SearchBar onSubmit={onSubmit} />
+      <ImageGallery arrayImg={arrayImg} openModal={openModal} />
+      {arrayImg.length !== 0 && (
+        <ButtonLoadMore searchInput={searchInput} loadMore={loadMore} />
+      )}
+    </>
+  );
 }
 
 export default App;

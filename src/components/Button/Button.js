@@ -1,55 +1,37 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import LoaderCircle from '../Loader/Loader';
 import FetchAPI from '../API/API';
 
-export default class ButtonLoadMore extends Component {
-  static propTypes = {
-    searchInput: PropTypes.string,
-    loadMore: PropTypes.func,
-  };
+export default function ButtonLoadMore({ searchInput, loadMore }) {
+  const [page, setPage] = useState(1);
+  const [loader, setLoader] = useState(false);
 
-  state = {
-    page: 1,
-    loader: false,
-  };
-
-  loadMoreBtn = () => {
-    const { searchInput, loadMore } = this.props;
-    const { page } = this.state;
-
-    this.setState(({ loader }) => ({
-      loader: !loader,
-    }));
+  const loadMoreBtn = () => {
+    setLoader(true);
 
     FetchAPI(searchInput, page + 1)
       .then(data => loadMore(data.hits))
-      .then(
-        this.setState({
-          page: page + 1,
-        }),
-      )
-      .finally(
-        this.setState(({ loader }) => ({
-          loader: !loader,
-        })),
-      );
+      .then(setPage(page + 1))
+      .finally(setLoader(false));
   };
 
-  render() {
-    const { loader } = this.state;
-    if (loader) {
-      return LoaderCircle();
-    }
+  if (loader) {
+    return LoaderCircle();
+  }
 
-    if (!loader) {
-      return (
-        <div className="Btn_load-more">
-          <button className="Button" type="button" onClick={this.loadMoreBtn}>
-            Load more
-          </button>
-        </div>
-      );
-    }
+  if (!loader) {
+    return (
+      <div className="Btn_load-more">
+        <button className="Button" type="button" onClick={loadMoreBtn}>
+          Load more
+        </button>
+      </div>
+    );
   }
 }
+
+ButtonLoadMore.propTypes = {
+  searchInput: PropTypes.string,
+  loadMore: PropTypes.func,
+};
