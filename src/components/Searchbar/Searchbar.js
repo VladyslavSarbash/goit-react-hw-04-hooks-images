@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import FetchAPI from '../API/API';
 
-export default function SearchBar({ onSubmit }) {
+export default function SearchBar({ onSubmit, setPage }) {
   const [searchInput, setSearchInput] = useState('');
 
   const formSubmit = e => {
@@ -15,7 +15,10 @@ export default function SearchBar({ onSubmit }) {
           searchInput: searchInput,
         }),
       )
-      .finally(setSearchInput(''));
+      .finally(() => {
+        setPage(1);
+        setSearchInput('');
+      });
   };
 
   const inputForm = ({ target }) => {

@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import LoaderCircle from '../Loader/Loader';
 import FetchAPI from '../API/API';
 
-export default function ButtonLoadMore({ searchInput, loadMore }) {
-  const [page, setPage] = useState(1);
+export default function ButtonLoadMore({
+  searchInput,
+  loadMore,
+  page,
+  setPage,
+}) {
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {

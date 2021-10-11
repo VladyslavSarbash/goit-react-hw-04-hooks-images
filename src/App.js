@@ -10,6 +10,7 @@ function App() {
   const [modalImg, setModalImg] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     window.scrollTo({
@@ -48,10 +49,15 @@ function App() {
           <img src={modalImg} alt="" />
         </Modal>
       )}
-      <SearchBar onSubmit={onSubmit} />
+      <SearchBar onSubmit={onSubmit} setPage={setPage} />
       <ImageGallery arrayImg={arrayImg} openModal={openModal} />
       {arrayImg.length !== 0 && (
-        <ButtonLoadMore searchInput={searchInput} loadMore={loadMore} />
+        <ButtonLoadMore
+          searchInput={searchInput}
+          loadMore={loadMore}
+          page={page}
+          setPage={setPage}
+        />
       )}
     </>
   );
